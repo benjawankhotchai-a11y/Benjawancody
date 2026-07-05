@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}กรอก {{ spec.label }} — First Lot Web{% endblock %}
+{% macro field(f) %}
+  <div class="field" data-key="{{ f.key }}" data-kind="{{ f.kind }}">
+    <label title="{{ label_for(f) }}">
+      {{ label_for(f) }}{% if f.key in ['line','checker','prod_order','model'] %} <span class="req">*</span>{% endif %}
+    </label>
+    {% if f.key == 'datetime' %}
+      <input type="text" readonly value="อัตโนมัติเมื่อบันทึก" data-auto="1"/>
+    {% elif f.kind == 'okng' %}
+      <div class="okng">
+        <button type="button" class="ok" data-v="OK">OK</button>
+        <button type="button" class="ng" data-v="NG">NG</button>
+      </div>
+      <input type="hidden" class="val"/>
+    {% elif f.kind == 'number' %}
+      <input type="number" step="any" class="val" inputmode="decimal"/>
+    {% elif f.kind == 'date' %}
+      <input type="date" class="val"/>
+    {% else %}
+      <input type="text" class="val"/>
+    {% endif %}
+  </div>
+{% endmacro %}
+{% block body %}
+<h1>กรอกผลตรวจ — {{ spec.label }}</h1>
+<div class="sub">กรอกข้อมูล First Lot แล้วกดบันทึก · ช่อง <span class="req" style="color:var(--ng)">*</span> บังคับกรอก · ข้อมูลถูกบันทึกลงฐานกลางทันที</div>
+
+<div class="msg" id="msg"></div>
+
+<form id="entryForm" data-type="{{ tid }}">
+  {% for gname, fs in primary %}
+    <div class="card formsec">
+      <div class="sec-h">{{ gname }}</div>
+      <div class="fgrid">
+        {% for f in fs %}{{ field(f) }}{% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+
+  {% if secondary %}
+  <details class="more">
+    <summary>▸ ข้อมูลเพิ่มเติม (Finish Lot / Tag 2-5 / Final check) — ไม่บังคับ</summary>
+    {% for gname, fs in secondary %}
+      <div class="card formsec">
+        <div class="sec-h">{{ gname }}</div>
+        <div class="fgrid">
+          {% for f in fs %}{{ field(f) }}{% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </details>
+  {% endif %}
+
+  <div class="formbar">
+    <button type="submit" class="btn primary lg" id="saveBtn">💾 บันทึกผลตรวจ</button>
+    <button type="reset" class="btn lg">ล้างฟอร์ม</button>
+    <span class="spacer"></span>
+    <span class="badge"><span class="dot"></span> บันทึกล่าสุด: <b id="lastSaved" style="margin-left:4px">-</b></span>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='entry.js') }}"></script>{% endblock %}

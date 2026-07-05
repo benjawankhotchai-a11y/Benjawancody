@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>{% block title %}First Lot Web{% endblock %}</title>
+<link rel="icon" href="{{ url_for('favicon') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-in">
+    <a href="{{ url_for('dashboard') }}" class="brand">🏭 First Lot Web</a>
+    <div class="nav-links">
+      <a href="{{ url_for('dashboard') }}" class="{% block nav_dash %}{% endblock %}">Dashboard</a>
+      <span class="nav-sep">กรอกข้อมูล:</span>
+      {% for tid, s in specs.items() %}
+        <a href="{{ url_for('entry', tid=tid) }}"
+           class="{% if request.view_args and request.view_args.get('tid')==tid %}on{% endif %}">{{ s.label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</nav>
+<main class="wrap">
+  {% block body %}{% endblock %}
+</main>
+<script src="{{ url_for('static', filename='common.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
